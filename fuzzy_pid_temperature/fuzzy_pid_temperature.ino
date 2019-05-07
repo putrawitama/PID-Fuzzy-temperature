@@ -18,7 +18,7 @@ DallasTemperature sensorSuhu(&oneWire);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int PWM_pin = 3;
-float set_temperature = 70;            //Default temperature setpoint. Leave it 0 and control it with rotary encoder
+float set_temperature = 69;            //Default temperature setpoint. Leave it 0 and control it with rotary encoder
 int reading = 0;
 float temperature_read = 0.0;
 float PID_error = 0;
@@ -31,8 +31,6 @@ float last_set_temperature = 0;
 int kp = 90;   int ki = 30;   int kd = 80;
 int PID_p = 0;    int PID_i = 0;    int PID_d = 0;
 
-int sensorPin = A5;
-
 float last_kp = 0;
 float last_ki = 0;
 float last_kd = 0;
@@ -42,7 +40,7 @@ int PID_values_fixed =0;
 
 void setup()
 {
-
+  Serial.begin(9600);
   Time = millis();
 	// initialize the LCD
   lcd.begin();
@@ -57,7 +55,7 @@ void setup()
 void loop()
 {
   temperature_read = ambilSuhu();
-  PID_error = set_temperature - temperature_read + 3;
+  PID_error = set_temperature - temperature_read;
 
   PID_p = 0.01*kp * PID_error;
   PID_i = 0.01*PID_i + (ki * PID_error);
@@ -70,11 +68,17 @@ void loop()
   //Final total PID value is the sum of P + I + D
   PID_value = PID_p + PID_i + PID_d;
 
+
   //We define PWM range between 0 and 255
   if(PID_value < 0)
   {    PID_value = 0;    }
   if(PID_value > 255)  
   {    PID_value = 255;  }
+
+  //grafik
+  Serial.println(temperature_read);
+//  Serial.print(" ");
+//  Serial.println(PID_value);
 
   analogWrite(PWM_pin,255-PID_value);
   previous_error = PID_error;     //Remember to store the previous error for next loop.
