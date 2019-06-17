@@ -100,6 +100,13 @@ void loop()
 
   delay(250);
 
+
+  Serial.print(kp);
+  Serial.print(" ");
+  Serial.print(ki);
+  Serial.print(" ");
+  Serial.println(kd);
+
   lcd.setCursor(0,0);
   lcd.print("P:");
   lcd.setCursor(2,0);
